@@ -72,10 +72,10 @@ Once you start your Minecraft server with this mod installed, a configuration fi
 ```json
 {
   "packs": {
-    "glassdoors": {
-      "modrinth": "https://modrinth.com/resourcepack/glass-doors",
+    "freshanimations": {
+      "modrinth": "https://modrinth.com/resourcepack/fresh-animations",
       "required": false,
-      "prompt": "Would you like to use the Glass Doors look?"
+      "prompt": "Would you like to use the Fresh Animations look?"
     }
   }
 }
