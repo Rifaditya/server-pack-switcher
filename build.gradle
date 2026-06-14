@@ -1,0 +1,62 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version '1.15-SNAPSHOT'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://jitpack.io" }
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    
+    implementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    
+    implementation "net.dasik.social:dasik-library:${project.dasik_library_version}"
+
+    // MixinExtras for advanced injectors
+    implementation "io.github.llamalad7:mixinextras-fabric:0.4.1"
+    annotationProcessor "io.github.llamalad7:mixinextras-fabric:0.4.1"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "loader_version", project.fabric_loader_version
+    inputs.property "minecraft_version", project.minecraft_version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+               "loader_version": project.fabric_loader_version,
+               "minecraft_version": project.minecraft_version
+    }
+}
+
+loom {
+    // Loom 1.15+ handles Mojang mappings natively. Do not declare mappings blocks.
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 25
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}

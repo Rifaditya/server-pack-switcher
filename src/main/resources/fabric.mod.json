@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "serverpackswitcher",
+  "version": "${version}",
+  "name": "Server Pack Switcher",
+  "description": "A server-side mod that allows players to switch resource packs using commands.",
+  "authors": [
+    "Dasik (Rifaditya)"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Rifaditya/server-pack-switcher",
+    "sources": "https://github.com/Rifaditya/server-pack-switcher"
+  },
+  "license": "GPL-3.0-or-later",
+  "icon": "assets/serverpackswitcher/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.serverpackswitcher.ServerPackSwitcherMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.1",
+    "minecraft": ">=26.2-",
+    "java": ">=25",
+    "fabric-api": "*",
+    "dasik-library": "*"
+  }
+}
