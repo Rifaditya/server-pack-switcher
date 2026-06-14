@@ -60,13 +60,13 @@ public class ServerPackSwitcherMod implements ModInitializer {
                 String preferredPackName = PREFERENCES.getPreference(player.getUUID());
                 if (preferredPackName != null) {
                     PackConfig.PackEntry pack = CONFIG.getPacks().get(preferredPackName);
-                    if (pack != null) {
-                        Component prompt = pack.prompt() != null && !pack.prompt().isEmpty() ? Component.literal(pack.prompt()) : null;
+                    if (pack != null && pack.getUrl() != null && !pack.getUrl().isEmpty()) {
+                        Component prompt = pack.getPrompt() != null && !pack.getPrompt().isEmpty() ? Component.literal(pack.getPrompt()) : null;
                         ClientboundResourcePackPushPacket pushPacket = new ClientboundResourcePackPushPacket(
-                            pack.id(),
-                            pack.url(),
-                            pack.hash(),
-                            pack.required(),
+                            pack.getId(),
+                            pack.getUrl(),
+                            pack.getHash(),
+                            pack.isRequired(),
                             Optional.ofNullable(prompt)
                         );
                         listener.send(pushPacket);
@@ -128,22 +128,27 @@ public class ServerPackSwitcherMod implements ModInitializer {
             return 0;
         }
 
+        if (pack.getUrl() == null || pack.getUrl().isEmpty()) {
+            source.sendFailure(Component.literal("This resource pack is still being resolved from Modrinth. Please try again in a moment."));
+            return 0;
+        }
+
         // Pop current pack if they have one
         String currentPackName = PREFERENCES.getPreference(player.getUUID());
         if (currentPackName != null) {
             PackConfig.PackEntry currentPack = CONFIG.getPacks().get(currentPackName);
-            if (currentPack != null) {
-                player.connection.send(new ClientboundResourcePackPopPacket(Optional.of(currentPack.id())));
+            if (currentPack != null && currentPack.getUrl() != null && !currentPack.getUrl().isEmpty()) {
+                player.connection.send(new ClientboundResourcePackPopPacket(Optional.of(currentPack.getId())));
             }
         }
 
         // Push new pack
-        Component prompt = pack.prompt() != null && !pack.prompt().isEmpty() ? Component.literal(pack.prompt()) : null;
+        Component prompt = pack.getPrompt() != null && !pack.getPrompt().isEmpty() ? Component.literal(pack.getPrompt()) : null;
         ClientboundResourcePackPushPacket pushPacket = new ClientboundResourcePackPushPacket(
-            pack.id(),
-            pack.url(),
-            pack.hash(),
-            pack.required(),
+            pack.getId(),
+            pack.getUrl(),
+            pack.getHash(),
+            pack.isRequired(),
             Optional.ofNullable(prompt)
         );
         player.connection.send(pushPacket);
@@ -178,8 +183,8 @@ public class ServerPackSwitcherMod implements ModInitializer {
         }
 
         PackConfig.PackEntry pack = CONFIG.getPacks().get(currentPackName);
-        if (pack != null) {
-            player.connection.send(new ClientboundResourcePackPopPacket(Optional.of(pack.id())));
+        if (pack != null && pack.getUrl() != null && !pack.getUrl().isEmpty()) {
+            player.connection.send(new ClientboundResourcePackPopPacket(Optional.of(pack.getId())));
         } else {
             player.connection.send(new ClientboundResourcePackPopPacket(Optional.empty()));
         }

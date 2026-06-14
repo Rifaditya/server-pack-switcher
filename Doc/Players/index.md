@@ -1,110 +1,135 @@
-# Wiki: Server Pack Switcher User Guide
+# Simple Guide to Server Pack Switcher
 
-Welcome to the **Server Pack Switcher** Wiki! This guide explains how to configure, use, and manage this server-side mod.
-
----
-
-## 📖 Table of Contents
-1. [Introduction](#-introduction)
-2. [Commands Reference](#-commands-reference)
-3. [Server Configuration](#-server-configuration)
-4. [Persistent Preferences](#-persistent-preferences)
-5. [Permissions & Administration](#-permissions--administration)
+Welcome! This guide is written to be **super easy** to follow, step-by-step. Even if you have never run a server or set up a mod before, you can do this!
 
 ---
 
-## 🚀 Introduction
-**Server Pack Switcher** is a lightweight, 100% server-side Fabric mod that enables players to choose, download, and apply resource packs using commands. Since it runs completely on the server, players can join with unmodified vanilla clients and still dynamically switch their resource packs.
+## 🎮 What does this mod do?
+Imagine you are playing on a server. Normally, a server can only have one look (resource pack) that everyone is forced to download. 
+
+With this mod, **players can choose their own looks using commands!** 
+For example, a player can type `/pack plastic` to make their blocks look like plastic, or `/pack pop` to go back to normal.
+
+Here is how to set it up in **5 easy steps**!
 
 ---
 
-## 💻 Commands Reference
+## 📅 Step 1: Get your Resource Pack URL (Direct Link)
+To send a resource pack to a player, the server needs to know where to download the `.zip` file from.
 
-All commands start with the `/pack` base prefix.
+### Option A: Using Modrinth (Easiest & Recommended!)
+You don't need direct file links or CDN URLs for Modrinth! You can simply use a Modrinth project URL, a project slug, or a version URL:
+- **Project URL**: `https://modrinth.com/resourcepack/glass-doors`
+- **Slug**: `glass-doors`
+- **Version URL**: `https://modrinth.com/resourcepack/glass-doors/version/1.2.3`
 
-| Command | Permission | Description |
-| :--- | :--- | :--- |
-| `/pack list` | Everyone | Displays a list of all configured server resource packs. |
-| `/pack <pack_name>` | Everyone | Applies the specified resource pack to the caller. |
-| `/pack apply <pack_name>` | Everyone | Alias for `/pack <pack_name>`. |
-| `/pack pop` | Everyone | Removes the active server pack from the caller's client. |
-| `/pack clear` | Everyone | Alias for `/pack pop`. |
-| `/pack apply <pack_name> <targets>` | Gamemaster (Level 2+) | Forces the specified resource pack onto the target player(s). |
-| `/pack pop <targets>` | Gamemaster (Level 2+) | Forces removal of the active server pack from the target player(s). |
-| `/pack reload` | Gamemaster (Level 2+) | Reloads the configuration file from disk. |
+### Option B: Using Discord
+1. Upload your resource pack `.zip` file to any Discord chat.
+2. Once uploaded, **Right-click** on the download arrow/icon of the file.
+3. Click **Copy Link**.
+4. The copied link will look like this: `https://cdn.discordapp.com/attachments/.../pack.zip` (This is your direct URL!).
 
-*Note: Command arguments support autocomplete (TAB suggestions) for all configured pack names.*
+### Option C: Using Dropbox
+1. Upload your `.zip` file to Dropbox.
+2. Click the **Share** button and copy the link.
+3. The link will look like this: `https://www.dropbox.com/s/.../pack.zip?dl=0`
+4. Change the very end of the link from `?dl=0` to `?raw=1`. 
+5. Your new link is: `https://www.dropbox.com/s/.../pack.zip?raw=1` (This is your direct URL!).
 
 ---
 
-## 🔧 Server Configuration
+## 🔑 Step 2: Get the "Fingerprint" of your Pack (SHA-1 Hash)
+The server needs a code (called a **SHA-1 Hash**) to tell the player's computer: *"Hey, you already downloaded this pack, you don't need to download it again!"* This code is 40 letters/numbers long.
 
-The mod generates its configuration file at `config/serverpackswitcher.json` inside your server folder.
+### Option A: Using Modrinth (No Hash Needed!)
+If you chose **Option A** (Modrinth) in Step 1, **you do not need to do this!** The server will automatically query Modrinth for the correct hash code for you. Go straight to Step 3.
 
-### Default Template
+### Option B: Using a Website
+1. Go to [https://emn178.github.io/online-tools/sha1_checksum.html](https://emn178.github.io/online-tools/sha1_checksum.html) or search online for "online SHA1 hash calculator".
+2. Drag and drop your resource pack `.zip` file into the box on the website.
+3. It will instantly show you a long line of letters and numbers (for example: `da39a3ee5e6b4b0d3255bfef95601890afd80709`).
+4. **Copy** that code!
+
+### Option C: Using Windows PowerShell (No Internet Needed)
+1. Press the **Windows Key** on your keyboard, type **PowerShell**, and press **Enter**.
+2. Type `Get-FileHash -Algorithm SHA1 ` (make sure there is a space at the end).
+3. Drag your resource pack `.zip` file from your folder and drop it into the PowerShell window. It will automatically type the path for you.
+4. Press **Enter**.
+5. Copy the long code listed under the **Hash** column.
+
+---
+
+## 📝 Step 3: Put the URL/Modrinth and Hash in the Config File
+Once you start your Minecraft server with this mod installed, a configuration file is created.
+
+1. Go to your Minecraft server folder.
+2. Open the **`config`** folder.
+3. Find a file named **`serverpackswitcher.json`**.
+4. Right-click the file, select **Open with**, and choose **Notepad**.
+5. You can configure it using either **Direct URLs** or **Modrinth links**:
+
+### If using Modrinth:
+```json
+{
+  "packs": {
+    "glassdoors": {
+      "modrinth": "https://modrinth.com/resourcepack/glass-doors",
+      "required": false,
+      "prompt": "Would you like to use the Glass Doors look?"
+    }
+  }
+}
+```
+*(No need to specify `url` or `hash`! The server will download the latest version automatically at startup)*
+
+### If using Direct URLs (Discord/Dropbox):
 ```json
 {
   "packs": {
     "plastic": {
-      "url": "https://example.com/plastic_pack.zip",
-      "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "url": "INSERT_YOUR_DISCORD_OR_DROPBOX_LINK_HERE",
+      "hash": "INSERT_YOUR_40_CHARACTER_CODE_HERE",
       "required": false,
-      "prompt": "Would you like to apply the Plastic Resource Pack?"
-    },
-    "default": {
-      "url": "https://example.com/default_server_pack.zip",
-      "hash": "",
-      "required": false
+      "prompt": "Would you like to use the Plastic look?"
     }
   }
 }
 ```
 
-### Configuration Fields
-For each pack entry, you can specify:
-
-* **`id`** (Optional UUID String): The unique identifier for this pack. If omitted, the mod generates one deterministically based on the `url`.
-* **`url`** (Required String): The download link to the resource pack zip file.
-* **`hash`** (Optional String): The SHA-1 hash of the zip file (40 hex characters). Highly recommended for client-side caching so players don't have to re-download the pack every time.
-* **`required`** (Optional Boolean, Default: `false`): If `true`, the client is prompted with a mandatory dialog to accept the pack.
-* **`prompt`** (Optional String): A message displayed on the client's screen when asking to download the pack.
-
-### 🔍 How to Find URLs & Generate Hashes
-
-#### 1. Obtaining a Direct Download URL
-The URL must be a **direct link** to the `.zip` file. When clicked, it should download the file immediately rather than opening a web page or file preview.
-- **Discord**: Upload the resource pack to a Discord channel, right-click the file, and select **Copy Link**.
-- **GitHub Releases**: Upload the `.zip` as a release asset, right-click the asset link, and select **Copy Link Address**.
-- **Dropbox**: Copy the share link and change the suffix from `?dl=0` to `?dl=1` or `?raw=1`.
-- **Google Drive**: Use a direct download link generator tool.
-
-#### 2. Generating the SHA-1 Hash
-The hash is a unique 40-character hex string representing the exact content of the file. Minecraft uses this to check if a client has already downloaded the pack (caching).
-- **Windows (PowerShell)**:
-  ```powershell
-  Get-FileHash -Algorithm SHA1 .\my_resource_pack.zip
-  ```
-- **macOS / Linux (Terminal)**:
-  ```bash
-  sha1sum my_resource_pack.zip
-  ```
-  *(or `shasum my_resource_pack.zip`)*
-- **Online Tools**: Search for "SHA1 file calculator", upload your `.zip` file, and copy the resulting SHA-1 hex string.
+6. Save the file (Press **Ctrl + S**) and close Notepad.
 
 ---
 
-## 💾 Persistent Preferences
-
-When a player selects a pack via `/pack <name>`, the server records this choice in `config/serverpackswitcher_preferences.json`.
-- When the player logs out and connects again later, the server automatically reads their preference and pushes the correct resource pack packet.
-- If a player runs `/pack pop`, their preference is cleared, and no pack will be sent on their next join.
+## 🔄 Step 4: Reload the Config
+If your server is already running, you don't need to restart it!
+1. Join your Minecraft server.
+2. Make sure you are an administrator (have operator `/op` permission).
+3. Press **T** or **/** to open the chat.
+4. Type **`/pack reload`** and press **Enter**.
+5. You should see a message saying the packs loaded successfully!
 
 ---
 
-## 🛡️ Permissions & Administration
+## 🧱 Step 5: How to Use the Commands in Minecraft
 
-Administrators can force packs on players using targeted commands:
-- `/pack apply plastic @a` - Sends the `plastic` pack to all online players.
-- `/pack pop @a[distance=..50]` - Clears server packs from all players within 50 blocks.
+Anyone on the server can use these commands in the game chat:
 
-To add new packs, edit `config/serverpackswitcher.json` and run `/pack reload`. The changes take effect instantly without restarting the server.
+### 1. View all available packs
+Type: **`/pack list`**
+*This will list all the names of packs you configured in Step 3 (like "glassdoors" or "plastic").*
+
+### 2. Apply a pack to yourself
+Type: **`/pack glassdoors`** (or `/pack apply glassdoors`)
+*A screen will pop up asking if you want to download and install the pack. Click **Yes**!*
+
+### 3. Remove your active pack
+Type: **`/pack pop`** (or `/pack clear`)
+*Your game will instantly go back to looking normal.*
+
+### 4. Admin Command: Give a pack to another player
+If you are an administrator, you can send a pack to other players:
+Type: **`/pack apply glassdoors Bob`** (replaces Bob with the player's name, or `@a` for everyone).
+
+---
+
+And that's it! Your players can now customize how their game looks whenever they want!
