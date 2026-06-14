@@ -69,6 +69,28 @@ For each pack entry, you can specify:
 * **`required`** (Optional Boolean, Default: `false`): If `true`, the client is prompted with a mandatory dialog to accept the pack.
 * **`prompt`** (Optional String): A message displayed on the client's screen when asking to download the pack.
 
+### 🔍 How to Find URLs & Generate Hashes
+
+#### 1. Obtaining a Direct Download URL
+The URL must be a **direct link** to the `.zip` file. When clicked, it should download the file immediately rather than opening a web page or file preview.
+- **Discord**: Upload the resource pack to a Discord channel, right-click the file, and select **Copy Link**.
+- **GitHub Releases**: Upload the `.zip` as a release asset, right-click the asset link, and select **Copy Link Address**.
+- **Dropbox**: Copy the share link and change the suffix from `?dl=0` to `?dl=1` or `?raw=1`.
+- **Google Drive**: Use a direct download link generator tool.
+
+#### 2. Generating the SHA-1 Hash
+The hash is a unique 40-character hex string representing the exact content of the file. Minecraft uses this to check if a client has already downloaded the pack (caching).
+- **Windows (PowerShell)**:
+  ```powershell
+  Get-FileHash -Algorithm SHA1 .\my_resource_pack.zip
+  ```
+- **macOS / Linux (Terminal)**:
+  ```bash
+  sha1sum my_resource_pack.zip
+  ```
+  *(or `shasum my_resource_pack.zip`)*
+- **Online Tools**: Search for "SHA1 file calculator", upload your `.zip` file, and copy the resulting SHA-1 hex string.
+
 ---
 
 ## 💾 Persistent Preferences
