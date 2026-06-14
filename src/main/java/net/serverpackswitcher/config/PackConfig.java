@@ -228,13 +228,13 @@ public class PackConfig {
                 "Would you like to apply the Plastic Resource Pack?",
                 ""
             ));
-            packs.put("glassdoors", new PackEntry(
+            packs.put("freshanimations", new PackEntry(
                 null,
                 "",
                 "",
                 false,
-                "Would you like to apply the Glass Doors resource pack from Modrinth?",
-                "https://modrinth.com/resourcepack/glass-doors"
+                "Would you like to apply the Fresh Animations resource pack from Modrinth?",
+                "https://modrinth.com/resourcepack/fresh-animations"
             ));
             save();
         } catch (Exception e) {
