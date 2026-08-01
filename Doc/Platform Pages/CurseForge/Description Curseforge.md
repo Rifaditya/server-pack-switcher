@@ -112,5 +112,9 @@
 
 <hr />
 
-<h2>Modpack Permissions</h2>
-<p>You are free to include this mod in any modpack, provided it is hosted on the same platform (e.g., CurseForge). Cross-platform redistribution is not permitted.</p>
+<h2>📦 Modpack Permissions</h2>
+<blockquote>
+    <strong>📦 Modpack Permissions:</strong><br>
+    You are free to include this mod in any modpack on any platform. However, the mod itself must be downloaded from its official distribution pages on <strong>Modrinth</strong> or <strong>CurseForge</strong>. Re-uploading or redistributing the mod jar file to third-party sites is strictly prohibited unless explicitly permitted by the creator.
+</blockquote>
+

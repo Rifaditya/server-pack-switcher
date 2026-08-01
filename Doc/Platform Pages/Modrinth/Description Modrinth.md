@@ -84,5 +84,7 @@ The mod automatically generates `config/serverpackswitcher.json` upon start.
 
 ---
 
-## 📜 Modpack Permissions
-You are free to include this mod in any modpack, provided it is hosted on the same platform (e.g., Modrinth). Cross-platform redistribution is not permitted.
+## 📦 Modpack Permissions
+> [!IMPORTANT]
+> **📦 Modpack Permissions:** You are free to include this mod in any modpack on any platform. However, the mod itself must be downloaded from its official distribution pages on **Modrinth** or **CurseForge**. Re-uploading or redistributing the mod jar file to third-party sites is strictly prohibited unless explicitly permitted by the creator.
+
