@@ -2,7 +2,7 @@
 
 > **Mod Project Master Ground-Truth Document**  
 > *Last Synchronized: 2026-09-01*  
-> **Modrinth ID**: *Unregistered* | **CurseForge ID**: *Unregistered* | **Lead SemVer**: `1.0.2`
+> **Modrinth ID**: *Unregistered* | **CurseForge ID**: *Unregistered* | **Lead SemVer**: `1.0.3`
 
 ---
 
@@ -10,14 +10,14 @@
 
 | Target MC | Generational Era | Live on Platforms | Next Queued Version | Status & Cadence Action | Feature Highlights / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **MC 26.2-rc-1** | Modern Standard | *(Unreleased)* | `1.0.2` | 🛠️ **Local Development** | Initial workspace build ready for first public deployment. |
+| **MC 26.2-rc-1** | Modern Standard | *(Unreleased)* | `1.0.3` | 🛠️ **Local Development** | Initial workspace build ready for first public deployment. |
 
 ---
 
 ## 🏛️ Project Operating Rules & Architectural Invariants
 
 1. **🔢 Universal Direct SemVer Inheritance**:
-   - Modern subprojects share unified SemVer milestone lineage targeting `1.0.2`.
+   - Modern subprojects share unified SemVer milestone lineage targeting `1.0.3`.
    - Each Minecraft version anchor manages its own organic progression to ensure 100% clean, verified parity.
 
 2. **📅 Daily Update Guard**:

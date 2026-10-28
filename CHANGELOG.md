@@ -6,6 +6,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2026-10-28
+
+### Added
+- Implemented complete Studio 5-Pillar Testing Harness:
+  - Pillar 1: Chaos Property & Config Fuzzing (`ServerPackSwitcherStressFuzzTest`) running 20,000+ iterations under Freedom Over Anti-Crash.
+  - Pillar 2: Virtual Concurrency Load Test (`ServerPackSwitcherConcurrencyLoadTest`) stressing 50 concurrent worker threads.
+  - Pillar 3: Brigadier AST & Command Hierarchy Validation (`ServerPackSwitcherCommandTest`) testing node syntax, suggestions, and operator permissions headlessly.
+  - Pillar 4: State Machine Simulation & In-Engine Protocol Suite (`ServerPackSwitcherGameTest`) verifying pack push, swap, pop, and player preference state transitions.
+  - Pillar 5: Sidedness & License Hygiene Contract (`ServerPackSwitcherSidednessContractTest`) verifying 0 client references in common code and 100% single-line GPLv3 license headers.
+
+### Changed
+- Hardened `PlayerPreferences` and `PackConfig` with `ConcurrentHashMap` and thread-safe file locking guards to guarantee deadlock-free concurrent read/write safety.
+- Decoupled configuration paths with `setCustomConfigPath` and `setCustomPrefsPath` supporting isolated unit test runners.
+
 ## [1.0.2] - 2026-08-01
 
 ### Changed

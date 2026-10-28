@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Dasik (Rifaditya) | GNU GPLv3
+
 package net.serverpackswitcher.config;
 
 // Verified against: FabricLoader.java (Fabric Loader API)
@@ -24,17 +26,41 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PackConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger("serverpackswitcher");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("serverpackswitcher.json");
+    private static final Object FILE_LOCK = new Object();
+
+    private static Path customConfigPath = null;
+
+    public static void setCustomConfigPath(Path path) {
+        synchronized (FILE_LOCK) {
+            customConfigPath = path;
+        }
+    }
+
+    public static Path getConfigPath() {
+        synchronized (FILE_LOCK) {
+            if (customConfigPath != null) {
+                return customConfigPath;
+            }
+        }
+        try {
+            if (FabricLoader.getInstance() != null && FabricLoader.getInstance().getConfigDir() != null) {
+                return FabricLoader.getInstance().getConfigDir().resolve("serverpackswitcher.json");
+            }
+        } catch (Throwable ignored) {
+        }
+        return Path.of("config", "serverpackswitcher.json");
+    }
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
         .followRedirects(HttpClient.Redirect.NORMAL)
         .build();
 
-    private Map<String, PackEntry> packs = new HashMap<>();
+    private volatile Map<String, PackEntry> packs = new ConcurrentHashMap<>();
 
     public static class PackEntry {
         private UUID id;
@@ -55,60 +81,64 @@ public class PackConfig {
             this.modrinth = modrinth;
         }
 
-        public UUID getId() {
+        public synchronized UUID getId() {
             if (id == null && url != null && !url.isEmpty()) {
                 id = UUID.nameUUIDFromBytes(url.getBytes(StandardCharsets.UTF_8));
             }
             return id;
         }
 
-        public void setId(UUID id) { this.id = id; }
-        public String getUrl() { return url; }
-        public void setUrl(String url) { this.url = url; }
-        public String getHash() { return hash; }
-        public void setHash(String hash) { this.hash = hash; }
-        public boolean isRequired() { return required; }
-        public void setRequired(boolean required) { this.required = required; }
-        public String getPrompt() { return prompt; }
-        public void setPrompt(String prompt) { this.prompt = prompt; }
-        public String getModrinth() { return modrinth; }
-        public void setModrinth(String modrinth) { this.modrinth = modrinth; }
+        public synchronized void setId(UUID id) { this.id = id; }
+        public synchronized String getUrl() { return url; }
+        public synchronized void setUrl(String url) { this.url = url; }
+        public synchronized String getHash() { return hash; }
+        public synchronized void setHash(String hash) { this.hash = hash; }
+        public synchronized boolean isRequired() { return required; }
+        public synchronized void setRequired(boolean required) { this.required = required; }
+        public synchronized String getPrompt() { return prompt; }
+        public synchronized void setPrompt(String prompt) { this.prompt = prompt; }
+        public synchronized String getModrinth() { return modrinth; }
+        public synchronized void setModrinth(String modrinth) { this.modrinth = modrinth; }
     }
 
     public Map<String, PackEntry> getPacks() {
         return packs;
     }
 
-    public void load() {
-        if (!Files.exists(CONFIG_PATH)) {
-            LOGGER.info("Config file not found, creating default at {}", CONFIG_PATH);
-            createDefaultConfig();
-            return;
-        }
+    public synchronized void load() {
+        synchronized (FILE_LOCK) {
+            Path configPath = getConfigPath();
+            if (!Files.exists(configPath)) {
+                LOGGER.info("Config file not found, creating default at {}", configPath);
+                createDefaultConfig();
+                return;
+            }
 
-        try (Reader reader = Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8)) {
-            JsonObject root = GSON.fromJson(reader, JsonObject.class);
-            if (root != null && root.has("packs")) {
-                Map<String, PackEntry> loadedPacks = GSON.fromJson(
-                    root.get("packs"),
-                    new TypeToken<Map<String, PackEntry>>() {}.getType()
-                );
-                if (loadedPacks != null) {
-                    this.packs = new HashMap<>();
-                    for (Map.Entry<String, PackEntry> entry : loadedPacks.entrySet()) {
-                        String name = entry.getKey().toLowerCase();
-                        PackEntry pack = entry.getValue();
-                        this.packs.put(name, pack);
-                        
-                        // If Modrinth is specified, resolve it asynchronously
-                        if (pack.getModrinth() != null && !pack.getModrinth().isEmpty()) {
-                            resolveModrinthPack(name, pack);
+            try (Reader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)) {
+                JsonObject root = GSON.fromJson(reader, JsonObject.class);
+                if (root != null && root.has("packs")) {
+                    Map<String, PackEntry> loadedPacks = GSON.fromJson(
+                        root.get("packs"),
+                        new TypeToken<Map<String, PackEntry>>() {}.getType()
+                    );
+                    if (loadedPacks != null) {
+                        Map<String, PackEntry> newPacks = new ConcurrentHashMap<>();
+                        for (Map.Entry<String, PackEntry> entry : loadedPacks.entrySet()) {
+                            String name = entry.getKey().toLowerCase();
+                            PackEntry pack = entry.getValue();
+                            newPacks.put(name, pack);
+                            
+                            // If Modrinth is specified, resolve it asynchronously
+                            if (pack.getModrinth() != null && !pack.getModrinth().isEmpty()) {
+                                resolveModrinthPack(name, pack);
+                            }
                         }
+                        this.packs = newPacks;
                     }
                 }
+            } catch (Exception e) {
+                LOGGER.error("Failed to load pack config", e);
             }
-        } catch (Exception e) {
-            LOGGER.error("Failed to load pack config", e);
         }
     }
 
@@ -216,11 +246,14 @@ public class PackConfig {
         return null;
     }
 
-    private void createDefaultConfig() {
+    private synchronized void createDefaultConfig() {
         try {
-            Files.createDirectories(CONFIG_PATH.getParent());
-            packs = new HashMap<>();
-            packs.put("plastic", new PackEntry(
+            Path configPath = getConfigPath();
+            if (configPath.getParent() != null) {
+                Files.createDirectories(configPath.getParent());
+            }
+            Map<String, PackEntry> defaultPacks = new ConcurrentHashMap<>();
+            defaultPacks.put("plastic", new PackEntry(
                 null,
                 "https://example.com/plastic_pack.zip",
                 "da39a3ee5e6b4b0d3255bfef95601890afd80709",
@@ -228,7 +261,7 @@ public class PackConfig {
                 "Would you like to apply the Plastic Resource Pack?",
                 ""
             ));
-            packs.put("freshanimations", new PackEntry(
+            defaultPacks.put("freshanimations", new PackEntry(
                 null,
                 "",
                 "",
@@ -236,19 +269,28 @@ public class PackConfig {
                 "Would you like to apply the Fresh Animations resource pack from Modrinth?",
                 "https://modrinth.com/resourcepack/fresh-animations"
             ));
+            this.packs = defaultPacks;
             save();
         } catch (Exception e) {
             LOGGER.error("Failed to create default config", e);
         }
     }
 
-    public void save() {
-        try (Writer writer = Files.newBufferedWriter(CONFIG_PATH, StandardCharsets.UTF_8)) {
-            Map<String, Object> root = new HashMap<>();
-            root.put("packs", packs);
-            GSON.toJson(root, writer);
-        } catch (Exception e) {
-            LOGGER.error("Failed to save pack config", e);
+    public synchronized void save() {
+        synchronized (FILE_LOCK) {
+            Path configPath = getConfigPath();
+            try {
+                if (configPath.getParent() != null) {
+                    Files.createDirectories(configPath.getParent());
+                }
+                try (Writer writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)) {
+                    Map<String, Object> root = new HashMap<>();
+                    root.put("packs", new HashMap<>(packs));
+                    GSON.toJson(root, writer);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Failed to save pack config", e);
+            }
         }
     }
 }

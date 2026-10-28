@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Dasik (Rifaditya) | GNU GPLv3
+
 package net.serverpackswitcher;
 
 // Verified against: ModInitializer.java (Fabric API)
@@ -36,7 +38,7 @@ public class ServerPackSwitcherMod implements ModInitializer {
     public static final PackConfig CONFIG = new PackConfig();
     public static final PlayerPreferences PREFERENCES = new PlayerPreferences();
 
-    private static final SuggestionProvider<CommandSourceStack> PACK_SUGGESTIONS = (context, builder) -> {
+    public static final SuggestionProvider<CommandSourceStack> PACK_SUGGESTIONS = (context, builder) -> {
         return SharedSuggestionProvider.suggest(CONFIG.getPacks().keySet(), builder);
     };
 
@@ -79,7 +81,7 @@ public class ServerPackSwitcherMod implements ModInitializer {
         LOGGER.info("Server Pack Switcher Initialized successfully!");
     }
 
-    private static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("pack")
             .then(Commands.literal("list")
                 .executes(context -> listPacks(context.getSource()))

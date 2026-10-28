@@ -3,8 +3,8 @@
 - **Ticket ID**: `[BL-SPS-001]`
 - **Category**: `[TECH_DEBT]`
 - **Priority**: `[MEDIUM]`
-- **Scope**: `All Anchors` (`1.20.1`, `1.21.1`, `1.21.11`, `26.1`, `26.2`, `26.3`)
-- **Status**: `📌 DEFERRED`
+- **Scope**: `Modern Lead` (`26.2-rc-1`, future backports via `[BL-SPS-002]`)
+- **Status**: `✅ RESOLVED`
 - **Target Repository / Root**: `server-pack-switcher`
 
 ---
@@ -38,16 +38,16 @@ Currently, `server-pack-switcher` lacks the studio's mandatory 5-Pillar Testing 
 
 ## 🚀 5. Implementation Steps (Code-Level Plan)
 1. Add JUnit 5 dependencies (`org.junit.jupiter:junit-jupiter:5.10.2`) and `test { useJUnitPlatform() }` to `build.gradle`.
-2. Author `src/test/java/net/serverpackswitcher/ServerPackSwitcherSidednessContractTest.java` (Pillar 5).
-3. Author `src/test/java/net/serverpackswitcher/ServerPackSwitcherStressFuzzTest.java` (Pillar 1).
-4. Author `src/test/java/net/serverpackswitcher/ServerPackSwitcherConcurrencyLoadTest.java` (Pillar 2).
-5. Author `src/test/java/net/serverpackswitcher/ServerPackSwitcherCommandTest.java` (Pillar 3) and `ServerPackSwitcherGameTest.java` (Pillar 4).
+2. Author `src/test/java/net/serverpackswitcher/test/ServerPackSwitcherSidednessContractTest.java` (Pillar 5).
+3. Author `src/test/java/net/serverpackswitcher/test/ServerPackSwitcherStressFuzzTest.java` (Pillar 1).
+4. Author `src/test/java/net/serverpackswitcher/test/ServerPackSwitcherConcurrencyLoadTest.java` (Pillar 2).
+5. Author `src/test/java/net/serverpackswitcher/test/ServerPackSwitcherCommandTest.java` (Pillar 3) and `ServerPackSwitcherGameTest.java` (Pillar 4).
 6. Execute `./gradlew test --no-daemon --console=plain` and ensure 100% green tests.
 
 ## 🏁 6. 5-Pillar Verification Checklist
-- [ ] **Pillar 1 (Chaos Fuzzing)**: Chaos property fuzzing passes 10k-50k iterations.
-- [ ] **Pillar 2 (Concurrency Load)**: Concurrency harness passes 50 virtual threads with zero race conditions.
-- [ ] **Pillar 3 (Brigadier AST)**: Brigadier command tree AST and permissions validated headlessly.
-- [ ] **Pillar 4 (GameTest)**: Native Mojang GameTests pass in headless server environment.
-- [ ] **Pillar 5 (Sidedness & Hygiene)**: Sidedness contract asserts 0 client imports in common code; single-line GPLv3 headers verified.
-- [ ] **Anchor Compilation**: Clean `./gradlew test` and `./gradlew build` across all targeted anchors.
+- [x] **Pillar 1 (Chaos Fuzzing)**: Chaos property fuzzing passes 10k-50k iterations.
+- [x] **Pillar 2 (Concurrency Load)**: Concurrency harness passes 50 virtual threads with zero race conditions.
+- [x] **Pillar 3 (Brigadier AST)**: Brigadier command tree AST and permissions validated headlessly.
+- [x] **Pillar 4 (GameTest)**: Native Mojang GameTests pass in headless server environment.
+- [x] **Pillar 5 (Sidedness & Hygiene)**: Sidedness contract asserts 0 client imports in common code; single-line GPLv3 headers verified.
+- [x] **Anchor Compilation**: Clean `./gradlew test` and `./gradlew build` across all targeted anchors.
