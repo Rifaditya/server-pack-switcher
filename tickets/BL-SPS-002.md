@@ -4,7 +4,7 @@
 - **Category**: `[FEATURE]`
 - **Priority**: `[MEDIUM]`
 - **Scope**: `Legacy & Transitional Anchors` (`1.20.1`, `1.21.1`, `1.21.11`)
-- **Status**: `📌 DEFERRED`
+- **Status**: `✅ RESOLVED`
 - **Target Repository / Root**: `server-pack-switcher`
 
 ---
@@ -39,9 +39,9 @@ Currently, `server-pack-switcher` exists exclusively on modern Minecraft 26.2-rc
 4. Execute `./gradlew test build` across all anchors and verify parity.
 
 ## 🏁 6. 5-Pillar Verification Checklist
-- [ ] **Pillar 1 (Chaos Fuzzing)**: Config and preference fuzzing passes across all anchors.
-- [ ] **Pillar 2 (Concurrency Load)**: 50 concurrent virtual threads verified per anchor.
-- [ ] **Pillar 3 (Brigadier AST)**: Brigadier commands `/pack` registered cleanly across all subprojects.
-- [ ] **Pillar 4 (GameTest)**: Headless packet dispatch state machine validated.
-- [ ] **Pillar 5 (Sidedness & Hygiene)**: 0 client references in common code; single-line GPLv3 headers on all files.
-- [ ] **Anchor Compilation**: Clean `./gradlew test` and `./gradlew build` across all 6 anchors.
+- [x] **Pillar 1 (Chaos Fuzzing)**: Config and preference fuzzing passes across all anchors.
+- [x] **Pillar 2 (Concurrency Load)**: 50 concurrent virtual threads verified per anchor.
+- [x] **Pillar 3 (Brigadier AST)**: Brigadier commands `/pack` registered cleanly across all subprojects.
+- [x] **Pillar 4 (GameTest)**: Headless packet dispatch state machine validated.
+- [x] **Pillar 5 (Sidedness & Hygiene)**: 0 client references in common code; single-line GPLv3 headers on all files.
+- [x] **Anchor Compilation**: Clean `./gradlew test` and `./gradlew build` across all 6 anchors.
