@@ -1,0 +1,4 @@
+{
+  "modmenu.summaryTranslation.serverpackswitcher": "Allows players to switch server resource packs via commands.",
+  "modmenu.descriptionTranslation.serverpackswitcher": "A 100% server-side Fabric mod that enables players to choose, swap, and clear server resource packs using commands (e.g. /pack plastic). Stretches server capability without modifying vanilla clients."
+}
